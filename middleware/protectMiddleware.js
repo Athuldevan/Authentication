@@ -1,5 +1,7 @@
 const jwt = require("jsonwebtoken");
-exports.protect = async function (req, res) {
+const User = require("../model/userModel");
+
+exports.protect = async function (req, res, next) {
   try {
     let token;
     // Getting the token from Header
@@ -10,26 +12,18 @@ exports.protect = async function (req, res) {
       token = req.headers.authorization.split(" ")[1];
     }
     // If theer is no token
-    if (!token) throw new Error("You are not logged in..Please Login first.");
+    if (!token) throw new Error("You are not logged in. Please login first.");
 
     // Decoding the token
     const decoded = jwt.verify(token, "access-token");
-    console.log(decoded)
     const loggedInUser = await User.findById(decoded?.id);
-    if (!loggedInUser) {
-      return (
-        res.status(401) /
-        json({
-          status: "success",
-          message: "You are not logged in.Please log in..",
-        })
-      );
-    }
+    if (!loggedInUser) throw new Error("User no longer exists");
 
     req.user = loggedInUser;
+    return next();
   } catch (err) {
     return res.status(400).json({
-      status: "faileddd",
+      status: "failed",
       message: err.message,
     });
   }
