@@ -1,6 +1,6 @@
 const User = require("../model/userModel");
 const jwt = require("jsonwebtoken");
-const { generateToken } = require("../utils/geneateToken");
+const { generateToken } = require("../utils/generateToken");
 
 // Signup
 exports.signup = async function (req, res) {
@@ -34,7 +34,7 @@ exports.login = async function (req, res) {
     if (!email || !password)
       throw new Error(`Please provide email and password`);
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).select("+password");
     if (!user) {
       return res.status(404).json({
         status: "failed",
