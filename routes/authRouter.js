@@ -2,9 +2,9 @@ const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const authController = require("../controller/authController");
-const protect = require("../middleware/protectMiddleware");
+const { protect } = require("../middleware/protectMiddleware");
 const User = require("../model/userModel");
-const { generateToken } = require("../utils/geneateToken");
+const { generateToken } = require("../utils/generateToken");
 
 router.route("/signup").post(authController.signup);
 // Login should NOT be protected
@@ -32,7 +32,7 @@ router.route("/refresh").post(async (req, res) => {
 });
 
 // Protected route example to test access token
-router.get("/me", protect.protect, async (req, res) => {
+router.get("/me", protect, async (req, res) => {
   return res.status(200).json({
     status: "success",
     user: { id: req.user._id, name: req.user.name, email: req.user.email },
